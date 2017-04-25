@@ -141,6 +141,75 @@ public class StateConfiguration<S, T> {
     }
 
     /**
+     * Accept the specified trigger with single parameter, execute exit actions and re-execute entry actions. Reentry
+     * behaves as though the configured state transitions to an identical sibling state
+     * <p>
+     * Applies to the current state only. Will not re-execute superstate actions, or cause actions to execute
+     * transitioning between super- and sub-states
+     *
+     * @param trigger The accepted trigger with parameters
+     * @param guard   Function that must return true in order for the trigger to be accepte
+     * @param <TArg0> Type of the first trigger argument
+     * @return The receiver
+     */
+    public <TArg0> StateConfiguration<S, T> permitReentryIf(TriggerWithParameters1<TArg0, S, T> trigger, final Func2<TArg0, Boolean> guard) {
+        return publicPermitIf(trigger.getTrigger(), representation.getUnderlyingState(), new Func2<Object[], Boolean>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Boolean call(Object[] args) {
+                return guard.call((TArg0)args[0]);
+            }
+        });
+    }
+
+    /**
+     * Accept the specified trigger with 2 parameters, execute exit actions and re-execute entry actions. Reentry
+     * behaves as though the configured state transitions to an identical sibling state
+     * <p>
+     * Applies to the current state only. Will not re-execute superstate actions, or cause actions to execute
+     * transitioning between super- and sub-states
+     *
+     * @param trigger The accepted trigger with parameters
+     * @param guard   Function that must return true in order for the trigger to be accepted
+     * @param <TArg0> Type of the first trigger argument
+     * @param <TArg1> Type of the second trigger argument
+     * @return The receiver
+     */
+    public <TArg0, TArg1> StateConfiguration<S, T> permitReentryIf(TriggerWithParameters2<TArg0, TArg1, S, T> trigger, final Func3<TArg0, TArg1, Boolean> guard) {
+        return publicPermitIf(trigger.getTrigger(), representation.getUnderlyingState(), new Func2<Object[], Boolean>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Boolean call(Object[] args) {
+                return guard.call((TArg0)args[0], (TArg1)args[1]);
+            }
+        });
+    }
+
+    /**
+     * Accept the specified trigger with 3 parameters, execute exit actions and re-execute entry actions. Reentry
+     * behaves as though the configured state transitions to an identical sibling state
+     * <p>
+     * Applies to the current state only. Will not re-execute superstate actions, or cause actions to execute
+     * transitioning between super- and sub-states
+     *
+     * @param trigger The accepted trigger with parameters
+     * @param guard   Function that must return true in order for the trigger to be accepted
+     * @param <TArg0> Type of the first trigger argument
+     * @param <TArg1> Type of the second trigger argument
+     * @param <TArg2> Type of the third trigger argument
+     * @return The receiver
+     */
+    public <TArg0, TArg1, TArg2> StateConfiguration<S, T> permitReentryIf(TriggerWithParameters3<TArg0, TArg1, TArg2, S, T> trigger, final Func4<TArg0, TArg1, TArg2, Boolean> guard) {
+        return publicPermitIf(trigger.getTrigger(), representation.getUnderlyingState(), new Func2<Object[], Boolean>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Boolean call(Object[] args) {
+                return guard.call((TArg0)args[0], (TArg1)args[1], (TArg2)args[2]);
+            }
+        });
+    }
+
+    /**
      * ignore the specified trigger when in the configured state
      *
      * @param trigger The trigger to ignore
