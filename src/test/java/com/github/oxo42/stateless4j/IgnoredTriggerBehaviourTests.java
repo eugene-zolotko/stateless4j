@@ -2,6 +2,7 @@ package com.github.oxo42.stateless4j;
 
 import com.github.oxo42.stateless4j.delegates.Func2;
 import com.github.oxo42.stateless4j.delegates.FuncBoolean;
+import com.github.oxo42.stateless4j.helpers.TestGuardWithParams;
 import com.github.oxo42.stateless4j.triggers.IgnoredTriggerBehaviour;
 import org.junit.Test;
 
@@ -47,6 +48,20 @@ public class IgnoredTriggerBehaviourTests {
     public void WhenGuardConditionTrue_IsGuardConditionMetIsTrue() {
         IgnoredTriggerBehaviour<State, Trigger> ignored = new IgnoredTriggerBehaviour<>(Trigger.X, toUntypedGuard(returnTrue));
         assertTrue(ignored.isGuardConditionMet(null));
+    }
+
+    @Test
+    public void WhenGuardWithParamConditionFalse_IsGuardConditionMetIsFalse() {
+        IgnoredTriggerBehaviour<State, Trigger> ignored =
+                new IgnoredTriggerBehaviour<>(Trigger.X, new TestGuardWithParams());
+        assertFalse(ignored.isGuardConditionMet(new Object[]{234, "abc", true}));
+    }
+
+    @Test
+    public void WhenGuardWithParamConditionTrue_IsGuardConditionMetIsTrue() {
+        IgnoredTriggerBehaviour<State, Trigger> ignored =
+                new IgnoredTriggerBehaviour<>(Trigger.X, new TestGuardWithParams());
+        assertTrue(ignored.isGuardConditionMet(new Object[]{123, "abc", true}));
     }
 
     public static Func2<Object[], Boolean> toUntypedGuard(final FuncBoolean guard) {

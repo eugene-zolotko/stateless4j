@@ -2,7 +2,9 @@ package com.github.oxo42.stateless4j;
 
 import com.github.oxo42.stateless4j.delegates.Action1;
 import com.github.oxo42.stateless4j.delegates.Action2;
+import com.github.oxo42.stateless4j.helpers.TestGuardWithParams;
 import com.github.oxo42.stateless4j.transitions.Transition;
+import com.github.oxo42.stateless4j.transitions.TransitioningTriggerBehaviour;
 import com.github.oxo42.stateless4j.triggers.IgnoredTriggerBehaviour;
 import org.junit.Test;
 
@@ -321,6 +323,20 @@ public class StateRepresentationTests {
         StateRepresentation<State, Trigger> rep = CreateRepresentation(State.B);
         rep.addTriggerBehaviour(new IgnoredTriggerBehaviour<State, Trigger>(Trigger.X, toUntypedGuard(IgnoredTriggerBehaviourTests.returnFalse)));
         assertFalse(rep.canHandle(Trigger.X, null));
+    }
+
+    @Test
+    public void WhenTransitionExistsAndGuardWithParamConditionMet_TriggerCanBeFired() {
+        StateRepresentation<State, Trigger> rep = CreateRepresentation(State.B);
+        rep.addTriggerBehaviour(new TransitioningTriggerBehaviour<>(Trigger.X, State.C, new TestGuardWithParams()));
+        assertTrue(rep.canHandle(Trigger.X, new Object[] {123, "abc", true}));
+    }
+
+    @Test
+    public void WhenTransitionExistsButGuardWithParamConditionIsNotMet_TriggerCanNotBeFired() {
+        StateRepresentation<State, Trigger> rep = CreateRepresentation(State.B);
+        rep.addTriggerBehaviour(new TransitioningTriggerBehaviour<>(Trigger.X, State.C, new TestGuardWithParams()));
+        assertFalse(rep.canHandle(Trigger.X, new Object[] {123, "cde", true}));
     }
 
     @Test

@@ -1,8 +1,9 @@
 package com.github.oxo42.stateless4j;
 
 import com.github.oxo42.stateless4j.delegates.Action;
+import com.github.oxo42.stateless4j.delegates.Func2;
 import com.github.oxo42.stateless4j.delegates.FuncBoolean;
-import org.junit.Ignore;
+import com.github.oxo42.stateless4j.triggers.TriggerWithParameters1;
 import org.junit.Test;
 
 import java.util.List;
@@ -121,8 +122,7 @@ public class StateMachineTests {
     }
 
     @Test
-    @Ignore
-    public void AcceptedTriggersRespectGuards() {
+    public void AcceptedTriggersIgnoreGuards() {
         StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
 
         config.configure(State.B)
@@ -136,7 +136,9 @@ public class StateMachineTests {
 
         StateMachine<State, Trigger> sm = new StateMachine<>(State.B, config);
 
-        assertEquals(0, sm.getPermittedTriggers().size());
+        // The behavior of this method is changed to count all the triggers with guards as permitted.
+        // This is done due to inability to specify parameters needed to evaluate parametrized triggers.
+        assertEquals(1, sm.getPermittedTriggers().size());
     }
 
     @Test
@@ -151,6 +153,51 @@ public class StateMachineTests {
         sm.fire(Trigger.X);
 
         assertEquals(State.C, sm.getState());
+    }
+
+    @Test
+    public void AcceptedByGuardWithParams() {
+        StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
+        TriggerWithParameters1<Integer, State, Trigger> triggerWithParam =
+                new TriggerWithParameters1<>(Trigger.X, Integer.class);
+
+        config.configure(State.A)
+                .permitIf(triggerWithParam, State.B, new Func2<Integer, Boolean>() {
+                    @Override
+                    public Boolean call(Integer arg1) {
+                        return arg1 == 567;
+                    }
+                });
+
+        StateMachine<State, Trigger> sm = new StateMachine<>(State.A, config);
+        sm.fire(triggerWithParam, 567);
+
+        assertEquals(State.B, sm.getState());
+    }
+
+    @Test
+    public void WhenRejectedByGuardWithParams_TriggerIgnoredWithInvertedGuard() {
+        StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
+        TriggerWithParameters1<Integer, State, Trigger> triggerWithParam =
+                new TriggerWithParameters1<>(Trigger.X, Integer.class);
+
+        Func2<Integer, Boolean> guard = new Func2<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer arg1) {
+                return arg1 == 567;
+            }
+        };
+
+        Func2<Integer, Boolean> invertedGuard = StateConfiguration.invertGuard(guard);
+
+        config.configure(State.A)
+                .permitIf(triggerWithParam, State.B, guard)
+                .ignoreIf(triggerWithParam, invertedGuard);
+
+        StateMachine<State, Trigger> sm = new StateMachine<>(State.A, config);
+        sm.fire(triggerWithParam, 678);
+
+        assertEquals(State.A, sm.getState());
     }
 
     private void setFired() {
