@@ -49,6 +49,6 @@ public class TriggerBehaviourTests {
         TransitioningTriggerBehaviour<State, Trigger> transitioning =
                 new TransitioningTriggerBehaviour<>(Trigger.X, State.C, new TestGuardWithParams());
 
-        assertFalse(transitioning.isGuardConditionMet(new Object[]{234, "bcd", false}));
+        assertFalse(transitioning.isGuardConditionMet(new Object[]{123, "abc", false}));
     }
 }

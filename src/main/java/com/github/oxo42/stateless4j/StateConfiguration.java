@@ -148,8 +148,8 @@ public class StateConfiguration<S, T> {
      * transitioning between super- and sub-states
      *
      * @param trigger The accepted trigger with parameters
-     * @param guard   Function that must return true in order for the trigger to be accepte
-     * @param <TArg0> Type of the first trigger argument
+     * @param guard   Function that must return true in order for the trigger to be accepted
+     * @param <TArg0> Type of the trigger argument
      * @return The receiver
      */
     public <TArg0> StateConfiguration<S, T> permitReentryIf(TriggerWithParameters1<TArg0, S, T> trigger, final Func2<TArg0, Boolean> guard) {
@@ -237,7 +237,7 @@ public class StateConfiguration<S, T> {
      * @param trigger The trigger to ignore
      * @param guard Function that must return true in order for the trigger to be ignored. Receives the trigger
      *              parameters.
-     * @param <TArg0> Type of the first trigger argument
+     * @param <TArg0> Type of the trigger argument
      * @return The receiver
      */
     public <TArg0> StateConfiguration<S, T> ignoreIf(TriggerWithParameters1<TArg0, S, T> trigger, final Func2<TArg0, Boolean> guard) {

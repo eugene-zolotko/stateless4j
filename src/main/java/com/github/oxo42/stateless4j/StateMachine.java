@@ -111,7 +111,7 @@ public class StateMachine<S, T> {
      * The currently-permissible trigger values.
      *
      * <p>Note: This method does not evaluate transition guards and counts a trigger as permitted
-     * if there is a transitions with a guard for such trigger.</p>
+     * if there is a transition with a guard for such trigger.</p>
      *
      * @return The currently-permissible trigger values
      */
